@@ -1,8 +1,8 @@
-use crate::ParsingError;
+use crate::{HttpMethod, ParsingError};
 use std::collections::HashMap;
 
 pub struct Request {
-    pub method: String,
+    pub method: HttpMethod,
     pub path: String,
     pub version: f32,
     pub headers: HashMap<String, String>,
@@ -31,7 +31,10 @@ impl Request {
         }
 
         // Extracts HTTP Method
-        let method = first_line[0].to_string();
+        let method = match HttpMethod::from(first_line[0]) {
+            Some(a) => a,
+            None => return Err(ParsingError::new("Invalid HTTP method")),
+        };
 
         // Extracts path
         let path = first_line[1].to_string();
